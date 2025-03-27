@@ -1,0 +1,106 @@
+"use client";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { FaWhatsapp, FaLinkedin, FaEnvelope, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
+
+export default function Contact() {
+  // State Management
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Send Email Request to Node.js Server
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setSuccess(true);
+        setError(false);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setError(true);
+        setSuccess(false);
+      }
+    } catch (error) {
+      setError(true);
+      setSuccess(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="bg-gray-100 dark:bg-blue-900 text-gray-800 dark:text-white min-h-screen flex items-center justify-center p-2 pt-20">
+      <motion.div
+        className="max-w-6xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 border border-yellow-900"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        {/* Title */}
+        <h1 className="text-2xl text-center md:text-5xl font-bold ">Contact us</h1>
+        <p className="text-center text-lg text-gray-600 dark:text-gray-300 mt-4">
+          Have a question? Let's talk!
+        </p>
+
+        {/* Contact Form */}
+        <form onSubmit={sendEmail} className="space-y-4 mt-8">
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-3 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white border-none focus:ring-2 focus:ring-yellow-500"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-3 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white border-none focus:ring-2 focus:ring-yellow-500"
+          />
+          <textarea
+            name="message"
+            placeholder="Tell us about your business needs..."
+            rows="5"
+            required
+            value={formData.message}
+            onChange={handleChange}
+            className="w-full p-3 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white border-none focus:ring-2 focus:ring-yellow-500"
+          ></textarea>
+
+          {/* Submission Messages */}
+          {success && <p className="text-green-500 text-sm">Message sent successfully!</p>}
+          {error && <p className="text-red-500 text-sm">Failed to send message.</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-yellow-500 text-gray-900 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition"
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </button>
+        </form>
+      </motion.div>
+    </section>
+  );
+}

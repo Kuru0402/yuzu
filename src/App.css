@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+.bg-yuzu {
+  background-image: url(/src/assets/Images/homeBg.webp);
+  background-size: cover;
+  background-position: center;
+}
+.bg-yuzustory {
+    background-image: url(/src/assets/Images/story.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+}
